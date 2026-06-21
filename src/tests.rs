@@ -1,12 +1,12 @@
 // Ignored tests will load credentials from a .env file in the root of the project.
 // Create a .env file with the following contents:
 //
-// INFISICAL_CLIENT_ID="your_client_id"
-// INFISICAL_CLIENT_SECRET="your_client_secret"
-// INFISICAL_BASE_URL="your_hosted_url" - defaults to http://localhost:8080
+// KMS_CLIENT_ID="your_client_id"
+// KMS_CLIENT_SECRET="your_client_secret"
+// KMS_BASE_URL="your_hosted_url" - defaults to http://localhost:8080
 //
-// INFISICAL_SECRETS_PROJECT_ID="your_project_id"
-// INFISICAL_KMS_PROJECT_ID="your_project_id"
+// KMS_SECRETS_PROJECT_ID="your_project_id"
+// KMS_KMS_PROJECT_ID="your_project_id"
 //
 // cargo test -- --ignored --nocapture
 
@@ -28,11 +28,11 @@ use dotenvy::dotenv;
 async fn setup_client() -> Client {
     dotenv().ok();
 
-    let client_id = std::env::var("INFISICAL_CLIENT_ID").expect("INFISICAL_CLIENT_ID must be set");
+    let client_id = std::env::var("KMS_CLIENT_ID").expect("KMS_CLIENT_ID must be set");
     let client_secret =
-        std::env::var("INFISICAL_CLIENT_SECRET").expect("INFISICAL_CLIENT_SECRET must be set");
+        std::env::var("KMS_CLIENT_SECRET").expect("KMS_CLIENT_SECRET must be set");
     let base_url =
-        std::env::var("INFISICAL_BASE_URL").unwrap_or("http://localhost:8080".to_string());
+        std::env::var("KMS_BASE_URL").unwrap_or("http://localhost:8080".to_string());
 
     let mut client = Client::builder()
         .base_url(&base_url)
@@ -47,11 +47,11 @@ async fn setup_client() -> Client {
 }
 
 #[tokio::test]
-#[ignore = "This test requires a running Infisical instance and valid credentials"]
+#[ignore = "This test requires a running Hanzo KMS instance and valid credentials"]
 async fn test_secrets_resource() {
     let client = setup_client().await;
-    let project_id = std::env::var("INFISICAL_SECRETS_PROJECT_ID")
-        .expect("INFISICAL_SECRETS_PROJECT_ID must be set");
+    let project_id = std::env::var("KMS_SECRETS_PROJECT_ID")
+        .expect("KMS_SECRETS_PROJECT_ID must be set");
     let environment = "dev";
     let secret_path = "/";
     let secret_key = "RUST_SDK_KEY";
@@ -153,11 +153,11 @@ async fn test_secrets_resource() {
 }
 
 #[tokio::test]
-#[ignore = "This test requires a running Infisical instance and valid credentials"]
+#[ignore = "This test requires a running Hanzo KMS instance and valid credentials"]
 async fn test_kms_resource() {
     let client = setup_client().await;
     let project_id =
-        std::env::var("INFISICAL_KMS_PROJECT_ID").expect("INFISICAL_KMS_PROJECT_ID must be set");
+        std::env::var("KMS_KMS_PROJECT_ID").expect("KMS_KMS_PROJECT_ID must be set");
 
     // --- ENCRYPTION KEY VARS ---
     let enc_key_name = "rust-sdk-kms-encryption-key";

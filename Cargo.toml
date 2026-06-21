@@ -1,18 +1,17 @@
 [package]
-name = "infisical"
+name = "kms"
 version = "0.0.3"
 edition = "2021"
 authors = [
-  "Daniel H. <daniel@infisical.com>",
-  "Andrey L. <andrey@infisical.com>",
+  "Hanzo AI, Inc. <dev@hanzo.ai>",
 ]
-description = "Official Rust SDK for Infisical"
-license = "MIT"
+description = "Official Rust SDK for Hanzo KMS"
+license = "BSD-3-Clause"
 readme = "README.md"
-repository = "https://github.com/infisical/rust-sdk"
-keywords = ["infisical", "secrets", "sdk", "api"]
+repository = "https://github.com/hanzokms/rust-sdk"
+keywords = ["kms", "secrets", "sdk", "api"]
 categories = ["api-bindings"]
-homepage = "https://infisical.com"
+homepage = "https://kms.hanzo.ai"
 include = ["**/*.rs", "Cargo.toml"]
 
 [dependencies]

@@ -1,9 +1,9 @@
 use url::Url;
 
-use crate::error::InfisicalError;
+use crate::error::KmsError;
 
 /// Builds a URL by appending query parameters from a JSON object.
-pub fn build_url(base_url: &str, params: &serde_json::Value) -> Result<String, InfisicalError> {
+pub fn build_url(base_url: &str, params: &serde_json::Value) -> Result<String, KmsError> {
     let mut url = Url::parse(base_url)?;
 
     if let Some(obj) = params.as_object() {
@@ -18,14 +18,14 @@ pub fn build_url(base_url: &str, params: &serde_json::Value) -> Result<String, I
     Ok(url.to_string())
 }
 
-/// Helper to check HTTP response status and return `InfisicalError` if unsuccessful.
+/// Helper to check HTTP response status and return `KmsError` if unsuccessful.
 pub async fn check_response(
     response: reqwest::Response,
-) -> Result<reqwest::Response, InfisicalError> {
+) -> Result<reqwest::Response, KmsError> {
     if !response.status().is_success() {
         let status = response.status();
         let message = response.text().await.unwrap_or_default();
-        return Err(InfisicalError::HttpError { status, message });
+        return Err(KmsError::HttpError { status, message });
     }
     Ok(response)
 }

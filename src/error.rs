@@ -4,9 +4,9 @@ use std::string::FromUtf8Error;
 use thiserror::Error;
 use url::ParseError;
 
-/// Infisical Errors.
+/// Hanzo KMS Errors.
 #[derive(Debug, Error)]
-pub enum InfisicalError {
+pub enum KmsError {
     /// An unexpected response was returned from API causing a deserialization error.
     #[error("Failed to process API response: {0}")]
     RequestError(#[from] reqwest::Error),

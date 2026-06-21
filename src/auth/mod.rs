@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{error::InfisicalError, resources::helper::check_response};
+use crate::{error::KmsError, resources::helper::check_response};
 
-/// Authentication methods for the Infisical API.
+/// Authentication methods for the Hanzo KMS API.
 #[derive(Debug, Clone)]
 pub enum AuthMethod {
     /// Universal authentication using a client ID and client secret.
@@ -52,7 +52,7 @@ impl AuthHelper {
         &self,
         http_client: &reqwest::Client,
         auth_method: AuthMethod,
-    ) -> Result<String, InfisicalError> {
+    ) -> Result<String, KmsError> {
         match auth_method {
             AuthMethod::UniversalAuth {
                 client_id,
@@ -69,7 +69,7 @@ impl AuthHelper {
         http_client: &reqwest::Client,
         client_id: &str,
         client_secret: &str,
-    ) -> Result<String, InfisicalError> {
+    ) -> Result<String, KmsError> {
         let url = format!("{}/api/v1/auth/universal-auth/login", self.base_url);
 
         let response = http_client

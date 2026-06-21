@@ -2,16 +2,16 @@ use std::time::Duration;
 
 use crate::{
     auth::{AuthHelper, AuthMethod},
-    error::InfisicalError,
+    error::KmsError,
     resources::{kms::KmsClient, secrets::SecretsClient},
 };
 
-/// Infisical Client. Used to interact with the Infisical API.
+/// Hanzo KMS Client. Used to interact with the Hanzo KMS API.
 ///
 /// Use the [Client::builder()] to construct an instance.
 #[derive(Debug)]
 pub struct Client {
-    /// Base URL of your Infisical instance.
+    /// Base URL of your Hanzo KMS instance.
     pub base_url: String,
     /// HTTP Client used to make requests.
     pub http_client: reqwest::Client,
@@ -21,7 +21,7 @@ pub struct Client {
     pub logged_in: bool,
 }
 
-/// A builder for creating an [Infisical Client](Client).
+/// A builder for creating an [Hanzo KMS Client](Client).
 #[derive(Debug)]
 pub struct ClientBuilder {
     base_url: Option<String>,
@@ -39,9 +39,9 @@ impl ClientBuilder {
         }
     }
 
-    /// Sets the base URL of the Infisical instance.
+    /// Sets the base URL of the Hanzo KMS instance.
     ///
-    /// Defaults to `https://app.infisical.com`.
+    /// Defaults to `https://kms.hanzo.ai`.
     #[must_use]
     pub fn base_url<S: Into<String>>(mut self, base_url: S) -> Self {
         self.base_url = Some(base_url.into());
@@ -50,7 +50,7 @@ impl ClientBuilder {
 
     /// Sets the user agent for the HTTP client.
     ///
-    /// Defaults to `infisical-rs`.
+    /// Defaults to `kms-rs`.
     #[must_use]
     pub fn user_agent<S: Into<String>>(mut self, user_agent: S) -> Self {
         self.user_agent = Some(user_agent.into());
@@ -67,20 +67,20 @@ impl ClientBuilder {
     }
 
     /// Builds the `Client`.
-    pub async fn build(self) -> Result<Client, InfisicalError> {
+    pub async fn build(self) -> Result<Client, KmsError> {
         Client::new(self.base_url, self.user_agent, self.request_timeout).await
     }
 }
 
 impl Client {
-    /// Creates a new builder for the Infisical Client.
+    /// Creates a new builder for the Hanzo KMS Client.
     /// The client will be initialized without authentication.
     /// Use [Client::login()] to add authentication later.
     ///
     /// # Examples
     ///
     /// ```rust,no_run
-    /// use infisical::{Client, AuthMethod};
+    /// use kms::{Client, AuthMethod};
     ///
     /// #[tokio::main]
     /// async fn main() {
@@ -100,16 +100,16 @@ impl Client {
         ClientBuilder::new()
     }
 
-    /// Internal method to create a new Infisical Client without authentication.
+    /// Internal method to create a new Hanzo KMS Client without authentication.
     /// The public interface is [Client::builder()].
     async fn new(
         base_url_opt: Option<String>,
         user_agent_opt: Option<String>,
         request_timeout_opt: Option<Duration>,
-    ) -> Result<Self, InfisicalError> {
-        let base_url = base_url_opt.unwrap_or_else(|| "https://app.infisical.com".to_string());
+    ) -> Result<Self, KmsError> {
+        let base_url = base_url_opt.unwrap_or_else(|| "https://kms.hanzo.ai".to_string());
 
-        let user_agent = user_agent_opt.unwrap_or_else(|| "infisical-rs".to_string());
+        let user_agent = user_agent_opt.unwrap_or_else(|| "kms-rs".to_string());
 
         let timeout = request_timeout_opt.unwrap_or_else(|| Duration::from_secs(10));
 
@@ -132,7 +132,7 @@ impl Client {
     /// Logs in the client using the provided authentication method.
     /// This will obtain an access token and update the internal HTTP client
     /// to include the authorization headers for subsequent requests.
-    pub async fn login(&mut self, auth_method: AuthMethod) -> Result<(), InfisicalError> {
+    pub async fn login(&mut self, auth_method: AuthMethod) -> Result<(), KmsError> {
         let token = AuthHelper::new(&self.base_url)
             .get_access_token(&self.http_client, auth_method)
             .await?;

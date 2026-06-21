@@ -93,7 +93,7 @@ impl ::std::fmt::Display for SigningAlgorithm {
     }
 }
 
-/// Represents a KMS key from the Infisical API.
+/// Represents a KMS key from the Hanzo KMS API.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct KmsKey {

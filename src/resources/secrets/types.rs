@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// Represents a secret from the Infisical API.
+/// Represents a secret from the Hanzo KMS API.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Secret {

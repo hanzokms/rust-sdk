@@ -17,7 +17,7 @@ pub use update::*;
 
 use crate::{
     client::Client,
-    error::InfisicalError,
+    error::KmsError,
     resources::helper::{build_url, check_response},
 };
 use helper::{ensure_unique_secrets_by_key, set_env_vars};
@@ -52,7 +52,7 @@ impl<'a> SecretsClient<'a> {
     /// Creates a new `SecretsClient`.
     ///
     /// This client is not meant to be constructed directly, but rather
-    /// through the main `Infisical` client.
+    /// through the main `Hanzo KMS` client.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -61,9 +61,9 @@ impl<'a> SecretsClient<'a> {
     async fn get_helper<T: for<'de> serde::Deserialize<'de>>(
         &self,
         url: String,
-    ) -> Result<T, InfisicalError> {
+    ) -> Result<T, KmsError> {
         if !self.client.logged_in {
-            return Err(InfisicalError::NotAuthenticated);
+            return Err(KmsError::NotAuthenticated);
         }
 
         let response = self
@@ -84,9 +84,9 @@ impl<'a> SecretsClient<'a> {
         method: reqwest::Method,
         url: String,
         body: &serde_json::Value,
-    ) -> Result<T, InfisicalError> {
+    ) -> Result<T, KmsError> {
         if !self.client.logged_in {
-            return Err(InfisicalError::NotAuthenticated);
+            return Err(KmsError::NotAuthenticated);
         }
 
         let response = self
@@ -103,7 +103,7 @@ impl<'a> SecretsClient<'a> {
     }
 
     /// Gets a secret by name.
-    pub async fn get(&self, request: GetSecretRequest) -> Result<Secret, InfisicalError> {
+    pub async fn get(&self, request: GetSecretRequest) -> Result<Secret, KmsError> {
         let base_url = format!(
             "{}/api/v3/secrets/raw/{}",
             self.client.base_url, request.secret_name
@@ -126,7 +126,7 @@ impl<'a> SecretsClient<'a> {
     }
 
     /// Lists secrets in a given project and environment.
-    pub async fn list(&self, request: ListSecretsRequest) -> Result<Vec<Secret>, InfisicalError> {
+    pub async fn list(&self, request: ListSecretsRequest) -> Result<Vec<Secret>, KmsError> {
         let base_url = format!("{}/api/v3/secrets/raw", self.client.base_url,);
 
         let query_params = serde_json::json!({
@@ -163,7 +163,7 @@ impl<'a> SecretsClient<'a> {
     }
 
     /// Creates a new secret.
-    pub async fn create(&self, request: CreateSecretRequest) -> Result<Secret, InfisicalError> {
+    pub async fn create(&self, request: CreateSecretRequest) -> Result<Secret, KmsError> {
         let base_url = format!(
             "{}/api/v3/secrets/raw/{}",
             self.client.base_url, request.secret_name
@@ -186,7 +186,7 @@ impl<'a> SecretsClient<'a> {
     }
 
     /// Updates an existing secret.
-    pub async fn update(&self, request: UpdateSecretRequest) -> Result<Secret, InfisicalError> {
+    pub async fn update(&self, request: UpdateSecretRequest) -> Result<Secret, KmsError> {
         let base_url = format!(
             "{}/api/v3/secrets/raw/{}",
             self.client.base_url, request.secret_name
@@ -247,7 +247,7 @@ impl<'a> SecretsClient<'a> {
     }
 
     /// Deletes a secret.
-    pub async fn delete(&self, request: DeleteSecretRequest) -> Result<Secret, InfisicalError> {
+    pub async fn delete(&self, request: DeleteSecretRequest) -> Result<Secret, KmsError> {
         let base_url = format!(
             "{}/api/v3/secrets/raw/{}",
             self.client.base_url, request.secret_name

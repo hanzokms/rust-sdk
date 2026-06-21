@@ -24,7 +24,7 @@ pub use verify::*;
 
 use crate::{
     client::Client,
-    error::InfisicalError,
+    error::KmsError,
     resources::helper::{build_url, check_response},
 };
 
@@ -37,7 +37,7 @@ impl<'a> KmsClient<'a> {
     /// Creates a new `KmsClient`.
     ///
     /// This client is not meant to be constructed directly, but rather
-    /// through the main `Infisical` client.
+    /// through the main `Hanzo KMS` client.
     pub fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -46,9 +46,9 @@ impl<'a> KmsClient<'a> {
     async fn get_helper<T: for<'de> serde::Deserialize<'de>>(
         &self,
         url: String,
-    ) -> Result<T, InfisicalError> {
+    ) -> Result<T, KmsError> {
         if !self.client.logged_in {
-            return Err(InfisicalError::NotAuthenticated);
+            return Err(KmsError::NotAuthenticated);
         }
 
         let response = self
@@ -69,9 +69,9 @@ impl<'a> KmsClient<'a> {
         method: reqwest::Method,
         url: String,
         body: &serde_json::Value,
-    ) -> Result<T, InfisicalError> {
+    ) -> Result<T, KmsError> {
         if !self.client.logged_in {
-            return Err(InfisicalError::NotAuthenticated);
+            return Err(KmsError::NotAuthenticated);
         }
 
         let response = self
@@ -88,7 +88,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Lists KMS keys in a given project.
-    pub async fn list(&self, request: ListKmsKeysRequest) -> Result<Vec<KmsKey>, InfisicalError> {
+    pub async fn list(&self, request: ListKmsKeysRequest) -> Result<Vec<KmsKey>, KmsError> {
         let base_url = format!("{}/api/v1/kms/keys", self.client.base_url);
 
         let query_params = serde_json::json!({
@@ -103,7 +103,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Gets a KMS key by ID.
-    pub async fn get(&self, request: GetKmsKeyRequest) -> Result<KmsKey, InfisicalError> {
+    pub async fn get(&self, request: GetKmsKeyRequest) -> Result<KmsKey, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}",
             self.client.base_url, request.key_id
@@ -118,7 +118,7 @@ impl<'a> KmsClient<'a> {
     pub async fn get_by_name(
         &self,
         request: GetKmsKeyByNameRequest,
-    ) -> Result<KmsKey, InfisicalError> {
+    ) -> Result<KmsKey, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/key-name/{}",
             self.client.base_url, request.key_name
@@ -130,7 +130,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Creates a new KMS key.
-    pub async fn create(&self, request: CreateKmsKeyRequest) -> Result<KmsKey, InfisicalError> {
+    pub async fn create(&self, request: CreateKmsKeyRequest) -> Result<KmsKey, KmsError> {
         let url = format!("{}/api/v1/kms/keys", self.client.base_url);
 
         let body = serde_json::json!({
@@ -148,7 +148,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Updates an existing KMS key.
-    pub async fn update(&self, request: UpdateKmsKeyRequest) -> Result<KmsKey, InfisicalError> {
+    pub async fn update(&self, request: UpdateKmsKeyRequest) -> Result<KmsKey, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}",
             self.client.base_url, request.key_id
@@ -182,7 +182,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Deletes a KMS key.
-    pub async fn delete(&self, request: DeleteKmsKeyRequest) -> Result<KmsKey, InfisicalError> {
+    pub async fn delete(&self, request: DeleteKmsKeyRequest) -> Result<KmsKey, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}",
             self.client.base_url, request.key_id
@@ -195,7 +195,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Encrypts data using a KMS key.
-    pub async fn encrypt(&self, request: EncryptRequest) -> Result<String, InfisicalError> {
+    pub async fn encrypt(&self, request: EncryptRequest) -> Result<String, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}/encrypt",
             self.client.base_url, request.key_id
@@ -212,7 +212,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Decrypts data using a KMS key.
-    pub async fn decrypt(&self, request: DecryptRequest) -> Result<String, InfisicalError> {
+    pub async fn decrypt(&self, request: DecryptRequest) -> Result<String, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}/decrypt",
             self.client.base_url, request.key_id
@@ -229,7 +229,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Signs data using a KMS key.
-    pub async fn sign(&self, request: SignRequest) -> Result<SignResponse, InfisicalError> {
+    pub async fn sign(&self, request: SignRequest) -> Result<SignResponse, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}/sign",
             self.client.base_url, request.key_id
@@ -248,7 +248,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Verifies a signature using a KMS key.
-    pub async fn verify(&self, request: VerifyRequest) -> Result<VerifyResponse, InfisicalError> {
+    pub async fn verify(&self, request: VerifyRequest) -> Result<VerifyResponse, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}/verify",
             self.client.base_url, request.key_id
@@ -268,7 +268,7 @@ impl<'a> KmsClient<'a> {
     }
 
     /// Gets the public key for a KMS key.
-    pub async fn get_public_key(&self, key_id: &str) -> Result<String, InfisicalError> {
+    pub async fn get_public_key(&self, key_id: &str) -> Result<String, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}/public-key",
             self.client.base_url, key_id
@@ -282,7 +282,7 @@ impl<'a> KmsClient<'a> {
     pub async fn get_signing_algorithms(
         &self,
         key_id: &str,
-    ) -> Result<Vec<String>, InfisicalError> {
+    ) -> Result<Vec<String>, KmsError> {
         let url = format!(
             "{}/api/v1/kms/keys/{}/signing-algorithms",
             self.client.base_url, key_id

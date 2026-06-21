@@ -6,4 +6,4 @@
 
 - [ ] All tests pass with `make test`
 - [ ] I ensured the PR is ready for review with `make reviewable`
-- [ ] I have read and acknowledged the [code of conduct](https://infisical.com/docs/contributing/getting-started/code-of-conduct)
+- [ ] I have read and acknowledged the [code of conduct](https://hanzo.ai/docs/contributing/getting-started/code-of-conduct)
